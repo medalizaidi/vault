@@ -1,0 +1,26 @@
+# ── STAGING overrides ──────────────────────────────────────────────
+server:
+  ha:
+    replicas: 3
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+
+  dataStorage:
+    size: 10Gi
+
+  auditStorage:
+    enabled: true
+    size: 5Gi
+
+ui:
+  enabled: true
+  serviceType: ClusterIP
+
+injector:
+  enabled: true

@@ -1,0 +1,64 @@
+# Job: bootstrap Vault after init + unseal.
+# Enables KV v2, writes secrets, creates policies, configures K8s auth.
+# ENV-specific values (DB_HOST, DB_PASSWORD, API_KEY, ENABLE_AUDIT)
+# are injected from the vault-bootstrap-secrets Secret in each env folder.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-bootstrap
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccountName: vault-init-sa
+      restartPolicy: OnFailure
+      volumes:
+        - name: scripts
+          configMap:
+            name: vault-bootstrap-scripts
+            defaultMode: 0755
+      containers:
+        - name: vault-bootstrap
+          image: hashicorp/vault:1.16.0
+          env:
+            - name: VAULT_ADDR
+              value: "http://vault.vault.svc.cluster.local:8200"
+            - name: ROOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-init-keys
+                  key: root-token
+            # ── injected from vault-bootstrap-secrets (per env) ──
+            - name: ENV
+              valueFrom:
+                secretKeyRef:
+                  name: vault-bootstrap-secrets
+                  key: env
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: vault-bootstrap-secrets
+                  key: db-host
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vault-bootstrap-secrets
+                  key: db-password
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vault-bootstrap-secrets
+                  key: api-key
+            - name: ENABLE_AUDIT
+              valueFrom:
+                secretKeyRef:
+                  name: vault-bootstrap-secrets
+                  key: enable-audit
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+          command: ["/scripts/bootstrap.sh"]

@@ -1,0 +1,25 @@
+# ── DEV overrides ──────────────────────────────────────────────────
+server:
+  ha:
+    replicas: 1          # single pod — saves resources on dev
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  dataStorage:
+    size: 5Gi
+
+  auditStorage:
+    enabled: false
+
+ui:
+  enabled: true          # keep UI on for dev debugging
+  serviceType: ClusterIP
+
+injector:
+  enabled: true

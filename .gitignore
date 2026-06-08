@@ -1,0 +1,6 @@
+# Never commit real secrets — use SealedSecrets or SOPS
+envs/staging/bootstrap-secret.yaml
+envs/prod/bootstrap-secret.yaml
+
+# Helm cache
+.helm/

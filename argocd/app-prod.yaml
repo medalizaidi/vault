@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault-prod
+  namespace: argocd
+  labels:
+    env: prod
+    app: vault
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/<your-org>/vault-gitops
+      targetRevision: main
+      path: charts/vault
+      helm:
+        releaseName: vault
+        valueFiles:
+          - values.yaml
+          - ../../envs/values-prod.yaml
+
+    - repoURL: https://github.com/<your-org>/vault-gitops
+      targetRevision: main
+      path: jobs/init-unseal
+
+    - repoURL: https://github.com/<your-org>/vault-gitops
+      targetRevision: main
+      path: jobs/bootstrap
+
+    - repoURL: https://github.com/<your-org>/vault-gitops
+      targetRevision: main
+      path: envs/prod
+
+  destination:
+    server: https://<AKS-PROD-API-SERVER>   # replace with actual AKS prod API URL
+    namespace: vault
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
