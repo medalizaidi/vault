@@ -19,6 +19,19 @@ spec:
           - values.yaml
           - ../../envs/values-dev.yaml
 
+    # 2. RBAC + init/unseal/bootstrap jobs
+    - repoURL: https://github.com/medalizaidi/vault
+      targetRevision: main
+      path: jobs/init-unseal
+
+    - repoURL: https://github.com/medalizaidi/vault
+      targetRevision: main
+      path: jobs/bootstrap
+
+    # 3. Dev-specific bootstrap secret
+    - repoURL: https://github.com/medalizaidi/vault
+      targetRevision: main
+      path: envs/dev
 
   destination:
     server: https://kubernetes.default.svc  
@@ -31,4 +44,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
- 
