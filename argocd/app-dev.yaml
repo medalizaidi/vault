@@ -7,10 +7,10 @@ metadata:
     env: dev
     app: vault
 spec:
-  project: default
+  project: hashicorp-vault
   sources:
     # 1. Vendored Vault Helm chart with dev values
-    - repoURL: https://github.com/<your-org>/vault-gitops
+    - repoURL: https://github.com/medalizaidi/vault
       targetRevision: main
       path: charts/vault
       helm:
@@ -19,22 +19,9 @@ spec:
           - values.yaml
           - ../../envs/values-dev.yaml
 
-    # 2. RBAC + init/unseal/bootstrap jobs
-    - repoURL: https://github.com/<your-org>/vault-gitops
-      targetRevision: main
-      path: jobs/init-unseal
-
-    - repoURL: https://github.com/<your-org>/vault-gitops
-      targetRevision: main
-      path: jobs/bootstrap
-
-    # 3. Dev-specific bootstrap secret
-    - repoURL: https://github.com/<your-org>/vault-gitops
-      targetRevision: main
-      path: envs/dev
 
   destination:
-    server: https://<AKS-DEV-API-SERVER>   # replace with actual AKS dev API URL
+    server: https://kubernetes.default.svc  
     namespace: vault
 
   syncPolicy:
