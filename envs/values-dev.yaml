@@ -1,5 +1,17 @@
 # ── DEV overrides ──────────────────────────────────────────────────
 server:
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    pathType: Prefix
+    activeService: true
+    hosts:
+      - host: vault.dev-avaxialabs.com
+        paths:
+          - /
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
   ha:
     replicas: 1          # single pod — saves resources on dev
 
